@@ -1,0 +1,42 @@
+serverFiles:
+  alerts:
+    groups:
+    - name: pod-alerts
+      rules:
+      - alert: PodNotRunning
+        expr: kube_pod_status_phase{phase!="Running"} == 1
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pod no está en Running"
+          description: "El pod {{ $labels.pod }} en el namespace {{ $labels.namespace }} dejó de estar en estado Running."
+    - name: cpu-alerts
+      rules:
+      - alert: HighCPUUsage
+        expr: sum(rate(container_cpu_usage_seconds_total{image!=""}[5m])) 
+              by (pod, namespace) 
+              / sum(kube_pod_container_resource_limits_cpu_cores) 
+              by (pod, namespace) > 0.8
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Alto uso de CPU en pod {{ $labels.pod }}"
+          description: "El pod {{ $labels.pod }} en el namespace {{ $labels.namespace }} supera el 80% de uso de CPU durante 2m."
+
+
+alertmanager:
+  config:
+    global:
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_from: 'angulopalomino@gmail.com'
+      smtp_auth_username: 'angulopalomino@gmail.com'
+      smtp_auth_password: ''  
+      smtp_require_tls: true
+    route:
+      receiver: 'correo'
+    receivers:
+    - name: 'correo'
+      email_configs:
+      - to: 'angulopalomino@gmail.com'
