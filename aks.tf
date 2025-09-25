@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "rg_01" {
-  name     = "rg-jangulop-dev-eastus-01"
-  location = "East US"
+  name     = "rg-jangulop-dev-eastus2-01"
+  location = "East US 2"
 }
 
 # resource "azurerm_log_analytics_workspace" "law_01" {
@@ -12,7 +12,7 @@ resource "azurerm_resource_group" "rg_01" {
 # }
 
 resource "azurerm_kubernetes_cluster" "aks_01" {
-  name                = "aks-jangulop-dev-eastus-01"
+  name                = "aks-jangulop-dev-eastus2-01"
   location            = azurerm_resource_group.rg_01.location
   resource_group_name = azurerm_resource_group.rg_01.name
   dns_prefix          = "aksdns"
